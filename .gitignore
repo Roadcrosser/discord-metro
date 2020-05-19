@@ -1,3 +1,7 @@
+# Local configs
+bot-config.json
+metro-config.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

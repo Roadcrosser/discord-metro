@@ -1,0 +1,35 @@
+{
+    "districts": [
+        {
+            "cat_id": 111,
+            "role_id": 222,
+            "station_id": 333
+        },
+        {
+            "cat_id": 444,
+            "role_id": 555,
+            "station_id": 666
+        }
+    ],
+    "metro": {
+        "speed": 15,
+        "wait": 15,
+        "looped": false,
+        "trains": [
+            {
+                "channel_id": 777,
+                "role_id": 888,
+                "station_id": 999,
+                "direction": 0,
+                "start": 1
+            },
+            {
+                "channel_id": 1111,
+                "role_id": 2222,
+                "station_id": 3333,
+                "direction": 1,
+                "start": -1
+            }
+        ]
+    }
+}
