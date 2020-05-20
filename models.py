@@ -26,6 +26,7 @@ class Train:
         self.start = start  # int index
 
         self.current_station = None  # discord.CategoryChannel
+        self.current_announcement = None  # discord.Message
 
     async def validate(self):
         # TODO: Add stuff
@@ -34,32 +35,41 @@ class Train:
 
         return True
 
-    async def announce_arrival(self, dest, nxt):
-        dest_channel = self.bot.working_guild.get_channel(dest.cat_id)
+    async def announce_movement(self, curr_ind, next_ind, curr, nxt, arriving):
+        curr_channel = self.bot.working_guild.get_channel(curr.cat_id)
         nxt_channel = self.bot.working_guild.get_channel(nxt.cat_id)
 
-        msg = f"Arriving at: **{dest_channel.name}**\nNext stop: **{nxt_channel.name}**"
+        s_map = util.draw_map(
+            curr_ind,
+            next_ind,
+            self.direction,
+            len(self.bot.metro_state.metro.stations),
+            not arriving,
+            self.bot.metro_state.metro.looped,
+        )
 
+        msg = f"Arriving at: **{curr_channel.name}**\nNext stop: **{nxt_channel.name}**"
+        if not arriving:
+            msg = (
+                f"Departing: **{curr_channel.name}**\nNext stop: **{nxt_channel.name}**"
+            )
+
+        msg = f"{s_map}\n\n{msg}"
         msg = discord.utils.escape_mentions(msg)
-        msg = util.fancify(msg)
-
-        await self.announce(msg)
-
-    async def announce_departure(self, curr, dest):
-        curr_channel = self.bot.working_guild.get_channel(curr.cat_id)
-        dest_channel = self.bot.working_guild.get_channel(dest.cat_id)
-
-        msg = f"Departing: **{curr_channel.name}**\nNext stop: **{dest_channel.name}**"
-
-        msg = discord.utils.escape_mentions(msg)
-        msg = util.fancify(msg)
 
         await self.announce(msg)
 
     async def announce(self, message):
-        channel = self.bot.working_guild.get_channel(self.channel_id)
-
-        await channel.send(message)
+        if not self.current_announcement:
+            channel = self.bot.working_guild.get_channel(self.channel_id)
+            msg = await channel.send(message)
+            self.current_announcement = msg
+        else:
+            try:
+                await self.current_announcement.edit(content=message)
+            except:
+                self.current_announcement = None
+                await self.announce(message)
 
     async def arrive(self, dest):
         channel = self.bot.working_guild.get_channel(self.channel_id)
