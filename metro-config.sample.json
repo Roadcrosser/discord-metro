@@ -15,20 +15,21 @@
         "speed": 15,
         "wait": 15,
         "looped": false,
+        "cat_id": 777,
         "trains": [
             {
-                "channel_id": 777,
-                "role_id": 888,
-                "station_id": 999,
-                "direction": 0,
-                "start": 1
+                "channel_id": 888,
+                "role_id": 999,
+                "direction": -1,
+                "start": 1,
+                "button": "⬅️"
             },
             {
                 "channel_id": 1111,
                 "role_id": 2222,
-                "station_id": 3333,
                 "direction": 1,
-                "start": -1
+                "start": -1,
+                "button": "➡️"
             }
         ]
     }
