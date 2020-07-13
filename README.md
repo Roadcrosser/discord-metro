@@ -4,6 +4,8 @@
 
 Discord Metro is an experimental interaction framework for a Discord guild that emulates a city with a metro system.
 
+![Discord Metro Demo](demo.gif)
+
 Status:
  - You can configure stations and trains, and have the trains go around the stations. There's a cool map that shows up when you do.
  - No role assignments yet, you'll have to find a different way to switch roles for now.
