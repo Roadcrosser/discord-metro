@@ -10,7 +10,11 @@ with open("bot-config.json", encoding="utf8") as o:
     botconfigs = json.loads(o.read())
 
 
-bot = discord.Client()
+bot = discord.Client(
+    intents=discord.Intents(
+        guilds=True, guild_messages=True, guild_reactions=True, members=True
+    )
+)
 metro = setup.setup(bot)
 
 # All extra attributes defined here
