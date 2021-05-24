@@ -1,3 +1,5 @@
+.vscode/
+
 # Local configs
 bot-config.json
 metro-config.json
