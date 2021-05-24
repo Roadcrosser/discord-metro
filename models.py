@@ -1,5 +1,6 @@
 import discord
 import util
+from emoji import clean_emoji
 
 
 class District:
@@ -48,11 +49,12 @@ class Train:
             self.bot.metro_state.metro.looped,
         )
 
-        msg = f"Arriving at: **{curr_channel.name}**\nNext stop: **{nxt_channel.name}**"
+        curr_name = clean_emoji(curr_channel.name)
+        nxt_name = clean_emoji(nxt_channel.name)
+
+        msg = f"Arriving at: **{curr_name}**\nNext stop: **{nxt_name}**"
         if not arriving:
-            msg = (
-                f"Departing: **{curr_channel.name}**\nNext stop: **{nxt_channel.name}**"
-            )
+            msg = f"Departing: **{curr_name}**\nNext stop: **{nxt_name}**"
 
         msg = f"{s_map}\n\n{msg}"
         msg = discord.utils.escape_mentions(msg)
