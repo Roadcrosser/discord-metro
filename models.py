@@ -64,6 +64,10 @@ class Train:
     async def announce(self, message):
         if not self.current_announcement:
             channel = self.bot.working_guild.get_channel(self.channel_id)
+            # Purge self previous messages
+            await channel.purge(
+                check=lambda message: message.author.id == self.bot.user.id
+            )
             msg = await channel.send(message)
             self.current_announcement = msg
         else:
