@@ -41,6 +41,7 @@ async def train_loop(train):
     curr_ind = train.start
     curr_ind = curr_ind % len(stations)
     next_ind = curr_ind + train.direction
+    next_ind = next_ind % len(stations)
     while True:
         current_station = stations[curr_ind]
         next_station = stations[next_ind]
