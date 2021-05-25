@@ -73,7 +73,9 @@ class District:
 
 
 class Train:
-    def __init__(self, bot, channel_id, role_id, direction, start, button):
+    def __init__(
+        self, bot, channel_id, role_id, direction, start, button, control_room
+    ):
         self.bot = bot  # discord.CLient
 
         self.channel_id = channel_id  # Snowflake
@@ -87,6 +89,8 @@ class Train:
         self.current_station = None  # District
         self.current_station_cat = None  # discord.CategoryChannel
         self.current_announcement = None  # discord.Message
+
+        self.control_room = control_room
 
     async def validate(self):
         # TODO: Add stuff
@@ -197,10 +201,12 @@ class Train:
         member = self.bot.working_guild.get_member(user.id)
         if not member:
             return
-        if not util.has_role(member, dest_role):
-            await member.add_roles(dest_role)
+
         if util.has_role(member, train_role):
             await member.remove_roles(train_role)
+            if not util.has_role(member, dest_role):
+                await member.add_roles(dest_role)
+                await self.log_user_movement(member, self.current_station_cat, False)
 
     async def embark(self, user):
         train_role = self.bot.working_guild.get_role(self.role_id)
@@ -215,6 +221,21 @@ class Train:
             await member.remove_roles(station_role)
             if not util.has_role(member, train_role):
                 await member.add_roles(train_role)
+                await self.log_user_movement(member, self.current_station_cat, True)
+
+    async def log_user_movement(self, user, station, boarding):
+        control_room_channel = self.bot.working_guild.get_channel(self.control_room)
+        await control_room_channel.send(
+            "{} **{}**#**{}** {} <#{}> {} {}".format(
+                "📥" if boarding else "📤",
+                clean_emoji(user.name),
+                user.discriminator,
+                "boarded" if boarding else "disembarked",
+                self.channel_id,
+                "from" if boarding else "to",
+                clean_emoji(station.name),
+            )
+        )
 
 
 class Metro:

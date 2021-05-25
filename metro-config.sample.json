@@ -12,6 +12,7 @@
         }
     ],
     "metro": {
+        "control_room": 123456,
         "speed": 15,
         "wait": 15,
         "looped": false,

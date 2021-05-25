@@ -23,7 +23,13 @@ def setup(bot):
 
     trains = [
         Train(
-            bot, t["channel_id"], t["role_id"], t["direction"], t["start"], t["button"]
+            bot,
+            t["channel_id"],
+            t["role_id"],
+            t["direction"],
+            t["start"],
+            t["button"],
+            metro["control_room"],
         )
         for t in metro["trains"]
     ]
