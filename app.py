@@ -5,6 +5,7 @@ import json
 import datetime
 
 from models import App
+from util import EJECT_SYMBOL
 
 with open("bot-config.json", encoding="utf8") as o:
     botconfigs = json.loads(o.read())
@@ -34,8 +35,40 @@ async def on_ready():
 
     if bot.metro_state.started == None:
         bot.metro_state.started = datetime.datetime.utcnow()
+        for s in bot.metro_state.metro.stations:
+            await s.announce_platform()
         for t in bot.metro_state.metro.trains:
             bot.loop.create_task(train_loop(t))
+
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.guild_id != bot.working_guild.id:
+        return
+
+    if payload.emoji.name != EJECT_SYMBOL:
+        return
+
+    member = bot.working_guild.get_member(payload.user_id)
+    if not member:
+        return
+
+    channel = bot.working_guild.get_channel(payload.channel_id)
+    if not channel:
+        return
+
+    for t in bot.metro_state.metro.trains:
+        if (
+            t.current_station
+            and t.channel_id == channel.id
+            and t.current_announcement
+            and t.current_announcement.id == payload.message_id
+        ):
+            await t.current_announcement.reactions[0].remove(member)
+            await t.disembark(member)
+            break
+
+    payload.message_id
 
 
 # Here's an idea, the train channels are voice channels instead because thats totally more immersive. Do think about it.
@@ -50,17 +83,21 @@ async def train_loop(train):
         current_station = stations[curr_ind]
         next_station = stations[next_ind]
 
+        await train.arrive(current_station)
+
+        # We announce movement after arriving to minimize cache issues with Discord and channel visibility
         await train.announce_movement(
             curr_ind, next_ind, current_station, next_station, True
         )
-        await train.arrive(current_station)
 
         await asyncio.sleep(metro.wait)
 
+        await train.depart(metro.cat_id)
+
+        # Announce movement after departing for the same reasons as above
         await train.announce_movement(
             curr_ind, next_ind, current_station, next_station, False
         )
-        await train.depart(metro.cat_id)
 
         await asyncio.sleep(metro.speed)
 

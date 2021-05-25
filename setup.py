@@ -7,14 +7,24 @@ def setup(bot):
     with open("metro-config.json", encoding="utf8") as o:
         configs = json.loads(o.read())
 
+    metro = configs["metro"]
+
     districts = [
-        District(bot, d["cat_id"], d["role_id"], d["station_id"])
+        District(
+            bot,
+            d["cat_id"],
+            d["role_id"],
+            d["station_id"],
+            configs["districts"],
+            metro["trains"],
+        )
         for d in configs["districts"]
     ]
 
-    metro = configs["metro"]
     trains = [
-        Train(bot, t["channel_id"], t["role_id"], t["direction"], t["start"])
+        Train(
+            bot, t["channel_id"], t["role_id"], t["direction"], t["start"], t["button"]
+        )
         for t in metro["trains"]
     ]
 
