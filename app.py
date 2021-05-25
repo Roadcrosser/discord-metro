@@ -36,6 +36,7 @@ async def on_ready():
     if bot.metro_state.started == None:
         bot.metro_state.started = datetime.datetime.utcnow()
         for s in bot.metro_state.metro.stations:
+            await s.reset_perms()
             await s.announce_platform()
         for t in bot.metro_state.metro.trains:
             bot.loop.create_task(train_loop(t))

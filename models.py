@@ -20,6 +20,13 @@ class District:
         # I don't think there's anything *to* validate here.
         return True
 
+    async def reset_perms(self):
+        cat = self.bot.working_guild.get_channel(self.cat_id)
+        for t in self.train_list:
+            train_role = self.bot.working_guild.get_role(t["role_id"])
+            if not cat.overwrites_for(train_role).is_empty():
+                await cat.set_permissions(train_role, overwrite=None)
+
     async def announce_platform(self):
         category = self.bot.working_guild.get_channel(self.cat_id)
         msg = f"You are at: {clean_emoji(category.name)}\n"
