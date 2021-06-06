@@ -126,7 +126,7 @@ class Train:
         if not arriving:
             msg = f"Departing: **{curr_name}**\nNext stop: **{nxt_name}**"
 
-        msg = f"{s_map}\n\n{msg}\n\nReact below to disembark at the next stop."
+        msg = f"{s_map}\n\n{msg}\n\nReact below to disembark at the {'current' if arriving else 'next'} stop."
         msg = discord.utils.escape_mentions(msg)
 
         await self.announce(msg)
@@ -166,10 +166,13 @@ class Train:
         await dest_cat.set_permissions(train_role, read_messages=True)
         await channel.edit(category=dest_cat, position=0)
 
-        if not (self.current_announcement and self.current_announcement.reactions):
+        if not (self.current_announcement):
             return
 
         # Disembark scheduled passengers
+        self.current_announcement = await channel.fetch_message(
+            self.current_announcement.id
+        )
         reaction = self.current_announcement.reactions[0]
         async for user in reaction.users():
             if user.bot:
@@ -182,6 +185,11 @@ class Train:
         train_role = self.bot.working_guild.get_role(self.role_id)
         transit_cat = self.bot.working_guild.get_channel(transit_id)
 
+        self.current_station.current_announcement = await self.bot.working_guild.get_channel(
+            self.current_station.station_id
+        ).fetch_message(
+            self.current_station.current_announcement.id
+        )
         platform_message = self.current_station.current_announcement
         if not platform_message:
             return

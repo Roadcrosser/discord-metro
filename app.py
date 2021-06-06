@@ -84,9 +84,13 @@ async def train_loop(train):
         current_station = stations[curr_ind]
         next_station = stations[next_ind]
 
+        # We announce movement both before and after arriving to minimize cache issues with Discord and channel visibility
+        await train.announce_movement(
+            curr_ind, next_ind, current_station, next_station, True
+        )
+
         await train.arrive(current_station)
 
-        # We announce movement after arriving to minimize cache issues with Discord and channel visibility
         await train.announce_movement(
             curr_ind, next_ind, current_station, next_station, True
         )
